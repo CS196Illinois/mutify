@@ -11,4 +11,4 @@ backwards = first_minute.reverse()
 print(len(backwards) / 1000)
 
 #exporting with tags
-backwards.export("backwards.mp3", format="mp3", tags={'artist': 'Garoad', 'album': '什麼什麼'})
+backwards.export("backwards.mp3", format="mp3", tags={'artist': 'Garoad', 'album': '什麼什麼什麼'})
