@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      table {
+	  font-family: calibri, sans-serif;
+	  border-collapse: collapse;
+	  width=100%;
+      }
+
+      td, th {
+	  border: 1px solid #dddddd;
+	  text-align: left;
+	  padding: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Upload Album</h2>
+    <div>
+      <h3>
+	Mutify
+      </h3>
+    </div>
+    <form action="/" method="post" enctype="multipart/form-data">
+      Album (Please have timestamps and tracknames separated by newlines):<br>
+      <input type="text" value="Album Name" name="album" required="required" />
+      <input type="text" value="Artist Name" name="artist" required="required" />
+      <input type="file" name="albumfile" required="required" />
+      <br>Time Stamps:<br>
+      <p><textarea name="timestamps" cols="60" rows="10" required="required"></textarea><br/>
+	<br>Track names:<br>
+      <textarea name="tracknames" cols="60" rows="10" required="required"></textarea><br/>
+      <input type="submit" value="Submit"> <input type="reset"></p>
+    </form>
+  </body>
+</html>
