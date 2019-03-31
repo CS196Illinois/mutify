@@ -1,0 +1,48 @@
+.container {
+    width: 80%;
+    height: 200px;
+    background: aqua;
+    margin: auto;
+    padding: 10px;
+}
+.projectinfo {
+    width: 15%;
+    height: 200px;
+    background: red;
+    float: left;
+}
+.upload {
+    margin-left: 15%;
+    height: 200px;
+    background: teal;
+}
+.tab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+.tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+}
+/* change background color on hover */
+.tab button:hover {
+    background-color: #ddd;
+}
+/* add active class characteristic */
+.tab button.active {
+    background-color: #ccc;
+}
+/* style tab content */
+.tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+}

@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, make_response, send_file, redirect, url_for
 from pydub import AudioSegment
-from splitter import convertTimestamps, trackSplit
+from audioFunctions import convertTimestamps, trackSplit
 import zipfile
 app = Flask(__name__)
 
