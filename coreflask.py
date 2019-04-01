@@ -26,7 +26,7 @@ def split():
     #have to do this for scope issues, there's probably a better way though
     global tracks
     tracks.update(trackSplit(mSong, lTimestamps, lTracknames, sArtist, sAlbum))
-    return redirect(url_for('/'))
+    return redirect(url_for('main'))
 
 @app.route('/crop', methods=['POST'])
 def crop():
@@ -39,12 +39,12 @@ def crop():
     sArtist = request.form['artist']
     sAlbum = request.form['album']
     #converting time input to ints
-    iStart = convertTimestamps(sStart)[0]
-    iEnd = convertTimestamps(sEnd)[0]
+    iStart = convertTimestamps(sStartTime)[0]
+    iEnd = convertTimestamps(sEndTime)[0]
     #have to do this for scope issues
     global tracks
     tracks.update(trackCrop(mSong, iStart, iEnd, sTitle, sArtist, sAlbum))
-    return redirect(url_for('/'))
+    return redirect(url_for('main'))
 
 @app.route('/speedup', methods=['POST'])
 def speedup():
@@ -58,7 +58,7 @@ def speedup():
     #have to do this for scope issues
     global tracks
     tracks.update(trackSpeedUp(mSong, iFactor, sTitle, sArtist, sAlbum))
-    return redirect(url_for('/'))
+    return redirect(url_for('main'))
 
 @app.route('/out/<trackname>', methods=['GET'])
 def track(trackname):
