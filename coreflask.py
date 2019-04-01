@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, make_response, send_file, redirect, url_for
 from pydub import AudioSegment
-from audioFunctions import convertTimestamps, trackSplit
+from audioFunctions import convertTimestamps, trackSplit, trackCrop, trackSpeedUp
 import zipfile
 app = Flask(__name__)
 
@@ -9,27 +9,56 @@ tracks = {}
 #TODO: add default location to save files, and automatically delete old ones
 @app.route('/', methods=['GET','POST'])
 def main():
-    if request.method == 'POST':
-        #processing input
-        request_file = request.files['albumfile']
-        mSong = AudioSegment.from_mp3(request_file)
-        sTimestamps = request.form['timestamps']
-        sTracknames = request.form['tracknames']
-        sArtist = request.form['artist']
-        sAlbum = request.form['album']
-        #converting raw input to lists
-        lTracknames = sTracknames.splitlines()
-        lTimestamps = convertTimestamps(sTimestamps)
-        #have to do this for scope issues, there's probably a better way though
-        global tracks
-        tracks = trackSplit(mSong, lTimestamps, lTracknames, sArtist, sAlbum)
-        return redirect(url_for('out'))
-    else:
-        return render_template('upload.html')
+    return render_template('home.html', tracks = tracks)
 
-@app.route('/out')
-def out():
-    return render_template('out.html', tracks = tracks)
+@app.route('/split', methods=['POST'])
+def split():
+    #processing input
+    request_file = request.files['albumfile']
+    mSong = AudioSegment.from_mp3(request_file)
+    sTimestamps = request.form['timestamps']
+    sTracknames = request.form['tracknames']
+    sArtist = request.form['artist']
+    sAlbum = request.form['album']
+    #converting raw input to lists
+    lTracknames = sTracknames.splitlines()
+    lTimestamps = convertTimestamps(sTimestamps)
+    #have to do this for scope issues, there's probably a better way though
+    global tracks
+    tracks.update(trackSplit(mSong, lTimestamps, lTracknames, sArtist, sAlbum))
+    return redirect(url_for('/'))
+
+@app.route('/crop', methods=['POST'])
+def crop():
+    #processing input
+    request_file = request.files['songfile']
+    mSong = AudioSegment.from_mp3(request_file)
+    sStartTime = request.form['start']
+    sEndTime = request.form['end']
+    sTitle = request.form['title']
+    sArtist = request.form['artist']
+    sAlbum = request.form['album']
+    #converting time input to ints
+    iStart = convertTimestamps(sStart)[0]
+    iEnd = convertTimestamps(sEnd)[0]
+    #have to do this for scope issues
+    global tracks
+    tracks.update(trackCrop(mSong, iStart, iEnd, sTitle, sArtist, sAlbum))
+    return redirect(url_for('/'))
+
+@app.route('/speedup', methods=['POST'])
+def speedup():
+    #processing input
+    request_file = request.files['songfile']
+    mSong = AudioSegment.from_mp3(request_file)
+    iFactor = request.form['factor']
+    sTitle = request.form['title']
+    sArtist = request.form['artist']
+    sAlbum = request.form['album']
+    #have to do this for scope issues
+    global tracks
+    tracks.update(trackSpeedUp(mSong, iFactor, sTitle, sArtist, sAlbum))
+    return redirect(url_for('/'))
 
 @app.route('/out/<trackname>', methods=['GET'])
 def track(trackname):

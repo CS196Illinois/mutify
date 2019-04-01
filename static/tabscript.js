@@ -16,4 +16,7 @@ function openTab(evt, tabName) {
     //Show current tab, and give its button the active class.
     document.getElementById(tabName).style.display = "block";
     evt.currentTarget.className += " active";
+
+    //Show output if not already shown.
+    document.getElementById("Output").style.display = "block";
 }

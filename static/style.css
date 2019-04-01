@@ -1,0 +1,125 @@
+body {
+    background-color: #263238;
+    font-family: Arial, Helvetica, sans-serif;
+    margin: auto 20px;
+}
+
+h1 {
+    width: 95%;
+    margin: 20px auto;
+    color: #FFFFFF;
+    font-size: 3em;
+}
+
+a:link,
+a:visited {
+    text-decoration: none;
+    color: #eff1f5;
+}
+
+.container {
+    width: 95%;
+    height: 400px;
+    margin: auto;
+    padding: 0px;
+}
+.projectinfo {
+    background-color:#37474f;
+    border: 10px solid #28323b;
+    outline: #2c3e50 solid 4px;
+    color: #eff1f5;
+    box-shadow: 7px 7px 5px 1px rgba(0,0,0,0.6);
+    width: 25%;
+    height: 400px;
+    float: left;
+}
+.boxHeader {
+    margin: 10px;
+    font-size: 16pt;
+    text-align: center;
+    vertical-align: middle;
+    color: #343d46;
+    background-color: #d08770;
+}
+
+.info {
+    margin: 10px;
+    font-size: 12pt;
+}
+
+.upload {
+    background-color:#37474f;
+    border: 10px solid #28323b;
+    outline: #2c3e50 solid 4px;
+    color: #eff1f5;
+    box-shadow: 7px 7px 5px 1px rgba(0,0,0,0.6);
+    margin-left: 30%;
+    height: 400px;
+}
+.tab {
+    overflow: hidden;
+    background-color: #8fa1b3;
+}
+
+.tab button {
+    color: #343d46;
+    font-size: 16px;
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+}
+/* change background color on hover */
+.tab button:hover {
+    background-color: #ddd;
+}
+/* add active class characteristic */
+.tab button.active {
+    background-color: #ccc;
+}
+/* style tab content */
+.tabcontent {
+    display: none;
+    padding: 6px;
+    border-top: none;
+    border-right: none;
+    width: 55%;
+    height: 342px;
+    float: left;
+}
+
+/* output */
+.output {
+    display: none;
+    padding: 6px;
+    border-top: none;
+    left-margin: 6px;
+    height: 342px;
+}
+
+/* style side by side form columns */
+.textAreaColumn {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.textAreaColumn div {
+    float: left;
+    width: 50%;
+    padding-right: 6px;
+    box-sizing: border-box;
+}
+
+.textAreaColumn div span {
+    display: block;
+    text-align: left;
+}
+
+.textAreaColumn div textarea {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 150px;
+}
