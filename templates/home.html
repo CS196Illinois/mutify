@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Mutify</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}" />
+    <script src="{{ url_for('static', filename='tabscript.js') }}"></script>
+  </head>
+  <body>
+    <h1>Mutify</h1>
+    <section class="container">
+      <div class="projectinfo">
+	<div class="boxHeader">Project Info</div>
+	<div class="info">
+	  Hi!  This is Mutify, a project to make quickly editing sound files an easy and painless process, that doesn't require you to download any external software.
+	</div>
+      </div>
+      <div class="upload">
+	<! -- Tab Links: -->
+	<div class="tab">
+	  <button class="tabbutton" onclick="openTab(event, 'Split')">Split</button>
+	  <button class="tabbutton" onclick="openTab(event, 'Crop')">Crop</button>
+	  <button class="tabbutton" onclick="openTab(event, 'SpeedUp')">Speed Up</button>
+	  </div>
+	<! -- Tab Content: -->
+	<div id="Split" class="tabcontent">
+	  <h4>Upload Album</h4>
+	  <form action="/split" method="post" enctype="multipart/form-data">
+	    <input type="text" value="Album Name" name="album" required="required" />
+	    <input type="text" value="Artist Name" name="artist" required="required" />
+	    <br>
+	    <input type="file" name="albumfile" required="required" style="margin-top: 10px;" />
+	    <div class="textAreaColumn">
+	      <div>
+		<span>Time Stamps:</span>
+		<textarea name="timestamps" cols="20" rows="10" required="required"></textarea><br>
+	      </div>
+	      <div>
+		<span>Track Names:</span>
+		<textarea name="tracknames" cols="20" rows="10" required="required"></textarea><br>
+	      </div>
+	      <input type="submit" value="Submit" style="margin-top: 10px">
+	      <input type="reset">
+	    </div>
+	  </form>
+	</div>
+	<div id="Crop" class="tabcontent">
+	  <h4>Upload Song</h4>
+	  <form action="/crop" method="post" enctype="multipart/form-data">
+	    <input type="text" value="Song Name" name="title" required="required" style="margin-bottom: 10px" />
+	    <br>
+	    <input type="text" value="Album Name" name="album" required="required" />
+	    <input type="text" value="Artist Name" name="artist" required="required" />
+	    <br>
+	    <input type="file" name="songfile" required="required" style="margin-top: 10px" />
+	    <div class="textAreaColumn">
+	      <div>
+		<span>Start Time:</span>
+		  <input type="text" value="0:00" name="start" required="required" />
+	      </div>
+	      <div>
+		<span>End Time:</span>
+		<input type="text" value="0:30" name="end" required="requirebbd" />
+	      </div>
+	    </div>
+	    <input type="submit" value="Submit" style="margin-top: 10px">
+	    <input type="reset">
+	  </form>
+	</div>
+	<div id="SpeedUp" class="tabcontent">
+	  <h4>Upload Song/Podcast</h4>
+	  <form action="/speedup" method="post" enctype="multipart/form-data">
+	    <input type="text" value="Song Name" name="title" required="required" style="margin-bottom: 10px" />
+	    <br>
+	    <input type="text" value="Album Name" name="album" required="required" />
+	    <input type="text" value="Artist Name" name="artist" required="required" />
+	    <br>
+	    <input type="file" name="songfile" required="required" style="margin-top: 10px; margin-bottom: 10px;" />
+	    <br>
+	    Speed Factor:
+	    <br>
+	    <input type="text" value="1.25" name="factor" required="required" />
+	    <br>
+	    <input type="submit" value="Submit" style="margin-top: 10px">
+	    <input type="reset">
+	  </form>
+	</div>
+	<div id="Output" class="output">
+	  <h4>Output</h4>
+	  <b><a href="outzip">Download as zip.</a></b>
+	  <br></br>
+	  <table>
+	    <tr>
+	      <th>Track Name:</th>
+	    </tr>
+	    {% for key in tracks %}
+	    <tr>
+	      <td><b><a href="/out/{{key}}">{{key}}.mp3</a></b></td>
+	    </tr>
+	    {% endfor %}
+	  </table>
+	  </div>
+  </body>
+</html>
