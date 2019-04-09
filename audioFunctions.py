@@ -44,8 +44,7 @@ def trackSpeedUp(mSong, iFactor, sTitle, sArtist, sAlbum):
     return { sTitle : tempSong.export(sTitle + ".mp3", format="mp3", tags={"artist" : sArtist, "album" : sAlbum}) }
 
 
-#gets a catchy hook composed from the first seven seconds of a
-#song and the last five seconds of a song, mixed together
+#gets a catchy hook composed from the first seven seconds of a song and the last five seconds of a song, mixed together
 #pass AudioSegment (mp3 file type), and its title, artist, and album
 #exports dictionary with key as song name
 def getCatchyHook(mSong, sTitle, sArtist, sAlbum):
