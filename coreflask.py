@@ -1,15 +1,19 @@
-from flask import Flask, request, render_template, make_response, send_file, redirect, url_for
+from flask import Flask, request, render_template, make_response, send_file, redirect, url_for, session
 from pydub import AudioSegment
 from audioFunctions import convertTimestamps, trackSplit, trackCrop, trackSpeedUp
-import zipfile
+import zipfile, os, tempfile
+
 app = Flask(__name__)
 
-tracks = {}
-
-#TODO: add default location to save files, and automatically delete old ones
 @app.route('/', methods=['GET','POST'])
 def main():
-    return render_template('home.html', tracks = tracks)
+    if session.get('directoryname') == False:
+        #I don't think I should be saving large files in the individual user sessions...
+        #pretty sure better way to do this is with temporary directories, or some db system
+        session['tracks'] = {}
+        #this needs to be unique per user...
+        session['directoryname'] = 'directory1'
+    return render_template('home.html', tracks = session['tracks'])
 
 @app.route('/split', methods=['POST'])
 def split():
@@ -23,9 +27,7 @@ def split():
     #converting raw input to lists
     lTracknames = sTracknames.splitlines()
     lTimestamps = convertTimestamps(sTimestamps)
-    #have to do this for scope issues, there's probably a better way though
-    global tracks
-    tracks.update(trackSplit(mSong, lTimestamps, lTracknames, sArtist, sAlbum))
+    session['tracks'].update(trackSplit(mSong, lTimestamps, lTracknames, sArtist, sAlbum))
     return redirect(url_for('main'))
 
 @app.route('/crop', methods=['POST'])
@@ -41,9 +43,7 @@ def crop():
     #converting time input to ints
     iStart = convertTimestamps(sStartTime)[0]
     iEnd = convertTimestamps(sEndTime)[0]
-    #have to do this for scope issues
-    global tracks
-    tracks.update(trackCrop(mSong, iStart, iEnd, sTitle, sArtist, sAlbum))
+    session['tracks'].update(trackCrop(mSong, iStart, iEnd, sTitle, sArtist, sAlbum))
     return redirect(url_for('main'))
 
 @app.route('/speedup', methods=['POST'])
@@ -55,21 +55,20 @@ def speedup():
     sTitle = request.form['title']
     sArtist = request.form['artist']
     sAlbum = request.form['album']
-    #have to do this for scope issues
-    global tracks
-    tracks.update(trackSpeedUp(mSong, iFactor, sTitle, sArtist, sAlbum))
+    session['tracks'].update(trackSpeedUp(mSong, iFactor, sTitle, sArtist, sAlbum))
     return redirect(url_for('main'))
 
 @app.route('/out/<trackname>', methods=['GET'])
 def track(trackname):
-    result = tracks[trackname]
+    result = session['tracks'][trackname]
     return send_file(result, attachment_filename=trackname+".mp3")
 
 @app.route('/outzip')
 def outzip():
     zipout = zipfile.ZipFile("album.zip", 'w', zipfile.ZIP_DEFLATED)
-    for key in tracks: zipout.write(key + ".mp3")
+    for key in session['tracks']: zipout.write(key + ".mp3")
     zipout.close()
+    #need to delete the zip file.
     return send_file('album.zip', mimetype='zip', attachment_filename = "album.zip", as_attachment = True)
 
 if __name__ == '__main__':
