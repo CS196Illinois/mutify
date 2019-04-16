@@ -4,16 +4,22 @@ from audioFunctions import convertTimestamps, trackSplit, trackCrop, trackSpeedU
 import zipfile, os, tempfile
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'some random arbitrary key value'
+
+totalusers = 0
 
 @app.route('/', methods=['GET','POST'])
 def main():
-    if session.get('directoryname') == False:
-        #I don't think I should be saving large files in the individual user sessions...
-        #pretty sure better way to do this is with temporary directories, or some db system
-        session['tracks'] = {}
-        #this needs to be unique per user...
-        session['directoryname'] = 'directory1'
-    return render_template('home.html', tracks = session['tracks'])
+    if 'dirname' not in session:
+        global totalusers
+        session['dirname'] = totalusers
+        totalusers = totalusers + 1
+        if not os.path.exists(session['dirname']):
+            os.makedir(session['dirname'])
+    tracks = {}
+    for filename in os.listdir(session['dirname']):
+        tracks[filename] = open(session['dirname']+filename)
+    return render_template('home.html', tracks = tracks)
 
 @app.route('/split', methods=['POST'])
 def split():
@@ -22,14 +28,20 @@ def split():
     mSong = AudioSegment.from_mp3(request_file)
     sTimestamps = request.form['timestamps']
     sTracknames = request.form['tracknames']
-    sArtist = request.form['artist']
+    sartist = request.form['artist']
     sAlbum = request.form['album']
     #converting raw input to lists
     lTracknames = sTracknames.splitlines()
     lTimestamps = convertTimestamps(sTimestamps)
-    session['tracks'].update(trackSplit(mSong, lTimestamps, lTracknames, sArtist, sAlbum))
+    for key, value in trackSplit(mSong, lTimestamps, lTracknames, sArtist, sAlbum).items():
+        tempfile = open(session['dirname'] + "/" + key)
+        tempfile.write(value)
+        os.remove(value)
+    #unsure if this works, if not will need to improve.
+    os.remove(request_file)
     return redirect(url_for('main'))
 
+#havent implemented changes in these two methods yet:
 @app.route('/crop', methods=['POST'])
 def crop():
     #processing input
@@ -44,6 +56,7 @@ def crop():
     iStart = convertTimestamps(sStartTime)[0]
     iEnd = convertTimestamps(sEndTime)[0]
     session['tracks'].update(trackCrop(mSong, iStart, iEnd, sTitle, sArtist, sAlbum))
+    session['count'].append("test")
     return redirect(url_for('main'))
 
 @app.route('/speedup', methods=['POST'])
