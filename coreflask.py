@@ -60,6 +60,42 @@ def speedup():
     tracks.update(trackSpeedUp(mSong, iFactor, sTitle, sArtist, sAlbum))
     return redirect(url_for('main'))
 
+@app.route('/catchyhook', methods=['POST'])
+def catchyhook():
+    #processing input
+    request_file = request.files['songfile']
+    mSong = AudioSegment.from_mp3(request_file)
+    sTitle = request.form['title']
+    sArtist = request.form['artist']
+    sAlbum = request.form['album']
+    #have to do this for scope issues
+    global tracks
+    tracks.update(getCatchyHook(mSong, sTitle, sArtist, sAlbum))
+    return redirect(url_for('main'))
+
+@app.route('/silence', methods=['POST'])
+def silence():
+    #processing input
+    iDuration = request.form['duration']
+    #have to do this for scope issues
+    global tracks
+    tracks.update(getSilence(iDuration))
+    return redirect(url_for('main'))
+
+@app.route('/combineclips', methods=['POST'])
+def combineclips():
+    #processing input
+    request_file = request.files['songfile']
+    mSongList = []
+    numInputSongs = request.form['num']
+    for i in range(numInputSongs):
+        mSong = AudioSegment.from_mp3(request_file)
+        mSongList.append(mSong)
+    #need to test if this method works to receive multiple inputs
+    #have to do this for scope issues
+    tracks.update(combineClips(mSongList))
+    return redirect(url_for('main'))
+
 @app.route('/out/<trackname>', methods=['GET'])
 def track(trackname):
     result = tracks[trackname]
