@@ -25,7 +25,7 @@ def trackSplit(mSong, lTimestamps, lTrackNames, sArtist, sAlbum):
             tempSong = mSong[time*1000:]
         else:
             tempSong = mSong[lTimestamps[index]*1000:lTimestamps[index+1]*1000]
-        dTracks[name] = tempSong.export(name + ".mp3", format="mp3", tags={"track": index, "artist": sArtist, "album" : sAlbum})
+        dTracks[name] = tempSong.export("tempfiles/" + name + ".mp3", format="mp3", tags={"track": index, "artist": sArtist, "album" : sAlbum})
     return dTracks
 
 #Crops an audio track passed to it, does the same stuff as splitter otherwise
@@ -34,10 +34,10 @@ def trackSplit(mSong, lTimestamps, lTrackNames, sArtist, sAlbum):
 def trackCrop(mSong, iStartTime, iEndTime, sTitle, sArtist, sAlbum):
     #multipled by 1000 for second to millisecond conversion
     tempSong = mSong[iStartTime*1000:iEndTime*1000]
-    return { sTitle : tempSong.export(sTitle + ".mp3", format="mp3", tags={"artist" : sArtist, "album" : sAlbum}) }
+    return { sTitle : tempSong.export("tempfiles/" + sTitle + ".mp3", format="mp3", tags={"artist" : sArtist, "album" : sAlbum}) }
 
 
 #speeds up an audio track
 def trackSpeedUp(mSong, iFactor, sTitle, sArtist, sAlbum):
     tempSong = speedup(mSong, float(iFactor))
-    return { sTitle : tempSong.export(sTitle + ".mp3", format="mp3", tags={"artist" : sArtist, "album" : sAlbum}) }
+    return { sTitle : tempSong.export("tempfiles/" + sTitle + ".mp3", format="mp3", tags={"artist" : sArtist, "album" : sAlbum}) }

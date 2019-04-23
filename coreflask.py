@@ -1,25 +1,21 @@
 from flask import Flask, request, render_template, make_response, send_file, redirect, url_for, session
 from pydub import AudioSegment
 from audioFunctions import convertTimestamps, trackSplit, trackCrop, trackSpeedUp
-import zipfile, os, tempfile
-
+import zipfile, uuid
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'some random arbitrary key value'
+app.config['UPLOAD_FOLDER'] = 'userfiles'
 
-totalusers = 0
+users = {}
 
+#TODO: add default location to save files, and automatically delete old ones
 @app.route('/', methods=['GET','POST'])
 def main():
-    if 'dirname' not in session:
-        global totalusers
-        session['dirname'] = totalusers
-        totalusers = totalusers + 1
-        if not os.path.exists(session['dirname']):
-            os.makedir(session['dirname'])
-    tracks = {}
-    for filename in os.listdir(session['dirname']):
-        tracks[filename] = open(session['dirname']+filename)
-    return render_template('home.html', tracks = tracks)
+    if 'uid' not in session:
+        global users
+        session['uid'] = str(uuid.uuid4)
+        users[session['uid']] = {}
+    return render_template('home.html', tracks =  users[session['uid']])
 
 @app.route('/split', methods=['POST'])
 def split():
@@ -28,20 +24,15 @@ def split():
     mSong = AudioSegment.from_mp3(request_file)
     sTimestamps = request.form['timestamps']
     sTracknames = request.form['tracknames']
-    sartist = request.form['artist']
+    sArtist = request.form['artist']
     sAlbum = request.form['album']
     #converting raw input to lists
     lTracknames = sTracknames.splitlines()
     lTimestamps = convertTimestamps(sTimestamps)
-    for key, value in trackSplit(mSong, lTimestamps, lTracknames, sArtist, sAlbum).items():
-        tempfile = open(session['dirname'] + "/" + key)
-        tempfile.write(value)
-        os.remove(value)
-    #unsure if this works, if not will need to improve.
-    os.remove(request_file)
+    global users
+    users[session['uid']].update(trackSplit(mSong, lTimestamps, lTracknames, sArtist, sAlbum))
     return redirect(url_for('main'))
 
-#havent implemented changes in these two methods yet:
 @app.route('/crop', methods=['POST'])
 def crop():
     #processing input
@@ -55,8 +46,8 @@ def crop():
     #converting time input to ints
     iStart = convertTimestamps(sStartTime)[0]
     iEnd = convertTimestamps(sEndTime)[0]
-    session['tracks'].update(trackCrop(mSong, iStart, iEnd, sTitle, sArtist, sAlbum))
-    session['count'].append("test")
+    global users
+    users[session['uid']].update(trackCrop(mSong, iStart, iEnd, sTitle, sArtist, sAlbum))
     return redirect(url_for('main'))
 
 @app.route('/speedup', methods=['POST'])
@@ -68,20 +59,20 @@ def speedup():
     sTitle = request.form['title']
     sArtist = request.form['artist']
     sAlbum = request.form['album']
-    session['tracks'].update(trackSpeedUp(mSong, iFactor, sTitle, sArtist, sAlbum))
+    global users
+    users[session['uid']].update(trackSpeedUp(mSong, iFactor, sTitle, sArtist, sAlbum))
     return redirect(url_for('main'))
 
 @app.route('/out/<trackname>', methods=['GET'])
 def track(trackname):
-    result = session['tracks'][trackname]
+    result = tracks[trackname]
     return send_file(result, attachment_filename=trackname+".mp3")
 
 @app.route('/outzip')
 def outzip():
     zipout = zipfile.ZipFile("album.zip", 'w', zipfile.ZIP_DEFLATED)
-    for key in session['tracks']: zipout.write(key + ".mp3")
+    for key in users[session['uid']]: zipout.write(key + ".mp3")
     zipout.close()
-    #need to delete the zip file.
     return send_file('album.zip', mimetype='zip', attachment_filename = "album.zip", as_attachment = True)
 
 if __name__ == '__main__':
