@@ -85,10 +85,10 @@ def silence():
 @app.route('/combineclips', methods=['POST'])
 def combineclips():
     #processing input
-    request_file = request.files['songfile']
     mSongList = []
     numInputSongs = request.form['num']
     for i in range(numInputSongs):
+        request_file = request.files['songfile']
         mSong = AudioSegment.from_mp3(request_file)
         mSongList.append(mSong)
     #need to test if this method works to receive multiple inputs
