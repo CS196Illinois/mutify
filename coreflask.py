@@ -79,7 +79,7 @@ def silence():
     iDuration = request.form['duration']
     #have to do this for scope issues
     global tracks
-    tracks.update(getSilence(iDuration))
+    tracks.update(getSilence(iDuration * 1000))
     return redirect(url_for('main'))
 
 @app.route('/combineclips', methods=['POST'])
