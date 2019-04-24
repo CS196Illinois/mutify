@@ -1,15 +1,21 @@
-from flask import Flask, request, render_template, make_response, send_file, redirect, url_for
+from flask import Flask, request, render_template, make_response, send_file, redirect, url_for, session
 from pydub import AudioSegment
 from audioFunctions import convertTimestamps, trackSplit, trackCrop, trackSpeedUp
-import zipfile
+import zipfile, uuid
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'some random arbitrary key value'
+app.config['UPLOAD_FOLDER'] = 'userfiles'
 
-tracks = {}
+users = {}
 
 #TODO: add default location to save files, and automatically delete old ones
 @app.route('/', methods=['GET','POST'])
 def main():
-    return render_template('home.html', tracks = tracks)
+    if 'uid' not in session:
+        global users
+        session['uid'] = str(uuid.uuid4)
+        users[session['uid']] = {}
+    return render_template('home.html', tracks =  users[session['uid']])
 
 @app.route('/split', methods=['POST'])
 def split():
@@ -23,9 +29,8 @@ def split():
     #converting raw input to lists
     lTracknames = sTracknames.splitlines()
     lTimestamps = convertTimestamps(sTimestamps)
-    #have to do this for scope issues, there's probably a better way though
-    global tracks
-    tracks.update(trackSplit(mSong, lTimestamps, lTracknames, sArtist, sAlbum))
+    global users
+    users[session['uid']].update(trackSplit(mSong, lTimestamps, lTracknames, sArtist, sAlbum))
     return redirect(url_for('main'))
 
 @app.route('/crop', methods=['POST'])
@@ -41,9 +46,8 @@ def crop():
     #converting time input to ints
     iStart = convertTimestamps(sStartTime)[0]
     iEnd = convertTimestamps(sEndTime)[0]
-    #have to do this for scope issues
-    global tracks
-    tracks.update(trackCrop(mSong, iStart, iEnd, sTitle, sArtist, sAlbum))
+    global users
+    users[session['uid']].update(trackCrop(mSong, iStart, iEnd, sTitle, sArtist, sAlbum))
     return redirect(url_for('main'))
 
 @app.route('/speedup', methods=['POST'])
@@ -55,9 +59,8 @@ def speedup():
     sTitle = request.form['title']
     sArtist = request.form['artist']
     sAlbum = request.form['album']
-    #have to do this for scope issues
-    global tracks
-    tracks.update(trackSpeedUp(mSong, iFactor, sTitle, sArtist, sAlbum))
+    global users
+    users[session['uid']].update(trackSpeedUp(mSong, iFactor, sTitle, sArtist, sAlbum))
     return redirect(url_for('main'))
 
 @app.route('/out/<trackname>', methods=['GET'])
@@ -68,7 +71,7 @@ def track(trackname):
 @app.route('/outzip')
 def outzip():
     zipout = zipfile.ZipFile("album.zip", 'w', zipfile.ZIP_DEFLATED)
-    for key in tracks: zipout.write(key + ".mp3")
+    for key in users[session['uid']]: zipout.write(key + ".mp3")
     zipout.close()
     return send_file('album.zip', mimetype='zip', attachment_filename = "album.zip", as_attachment = True)
 
