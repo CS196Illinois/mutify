@@ -21,7 +21,10 @@
 	  <button class="tabbutton" onclick="openTab(event, 'Split')">Split</button>
 	  <button class="tabbutton" onclick="openTab(event, 'Crop')">Crop</button>
 	  <button class="tabbutton" onclick="openTab(event, 'SpeedUp')">Speed Up</button>
-	  </div>
+	  <button class="tabbutton" onclick="openTab(event, 'CatchyHook')">Catchy Hook</button>
+	  <button class="tabbutton" onclick="openTab(event, 'Silence')">Silence</button>
+	  <button class="tabbutton" onclick="openTab(event, 'CombineClips')">Combine Clips</button>
+  	</div>
 	<! -- Tab Content: -->
 	<div id="Split" class="tabcontent">
 	  <h4>Upload Album</h4>
@@ -80,6 +83,46 @@
 	    Speed Factor:
 	    <br>
 	    <input type="text" value="1.25" name="factor" required="required" />
+	    <br>
+	    <input type="submit" value="Submit" style="margin-top: 10px">
+	    <input type="reset">
+	  </form>
+	</div>
+	<div id="CatchyHook" class="tabcontent">
+	  <h4>Upload Song/Podcast</h4>
+	  <form action="/catchyhook" method="post" enctype="multipart/form-data">
+	    <input type="text" value="Song Name" name="title" required="required" style="margin-bottom: 10px" />
+	    <br>
+	    <input type="text" value="Album Name" name="album" required="required" />
+	    <input type="text" value="Artist Name" name="artist" required="required" />
+	    <br>
+	    <input type="file" name="songfile" required="required" style="margin-top: 10px; margin-bottom: 10px;" />
+	    <br>
+	    <input type="submit" value="Submit" style="margin-top: 10px">
+	    <input type="reset">
+	  </form>
+	</div>
+	<div id="Silence" class="tabcontent">
+	  <h4>Upload Song/Podcast</h4>
+	  <form action="/silence" method="post" enctype="multipart/form-data">
+	    Silence Duration (in seconds):
+	    <br>
+	    <input type="text" value="3" name="duration" required="required" />
+	    <br>
+	    <input type="submit" value="Submit" style="margin-top: 10px">
+	    <input type="reset">
+	  </form>
+	</div>
+	<div id="CombineClips" class="tabcontent">
+	  <h4>Upload Song/Podcast</h4>
+	  <form action="/combineclips" method="post" enctype="multipart/form-data">
+	    Number of Clips:
+	    <br>
+	    <input type="text" value="2" name="clips" required="required" />
+	    <br>
+	    <input type="file" name="songfile1" required="required" style="margin-top: 10px; margin-bottom: 10px;" />
+	    <br>
+	    <input type="file" name="songfile2" required="required" style="margin-top: 10px; margin-bottom: 10px;" />
 	    <br>
 	    <input type="submit" value="Submit" style="margin-top: 10px">
 	    <input type="reset">
